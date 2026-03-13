@@ -1,6 +1,7 @@
 import { pool } from "../config/db.js";
 import bcrypt from "bcryptjs";
 import { v4 as uuidv4 } from "uuid";
+import generateToken from "../utils/jtwToken.js";
 
 const register = async (req, res, next) => {
   // Body register
@@ -20,7 +21,7 @@ const register = async (req, res, next) => {
     // Hashing password with bcrypt
     const salt = await bcrypt.genSalt(10);
     const hashUserPassword = await bcrypt.hash(password, salt);
-
+ 
     // Generate uuid
     const uuid = uuidv4();
 
@@ -29,6 +30,11 @@ const register = async (req, res, next) => {
       `insert into users (uuid, name, email, password, role) values (?,?,?,?,?)`,
       [uuid, name, email, hashUserPassword, role],
     );
+
+    // Generate JWT Token
+    const jwtToken = generateToken(uuid, res);
+    console.log(uuid)
+
     return res.status(202).json({
       status: "success",
       data: {
@@ -37,6 +43,7 @@ const register = async (req, res, next) => {
           name,
           email,
         },
+        jwtToken
       },
     });
   } catch (err) {
@@ -44,7 +51,8 @@ const register = async (req, res, next) => {
   }
 };
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
+  // Body login
   const { email, password } = req.body;
 
   try {
@@ -64,18 +72,50 @@ const login = async (req, res) => {
       return res.status(400).json({ error: "Invalid Email or Password" });
     }
 
+    // Generate JWT Token
+    const jwtToken = generateToken(user.uuid, res);
+
     return res.status(201).json({
       status: "success",
       data: {
         user: {
-          id: user.id,
+          id: user.uuid,
           email: email,
         },
+        jwtToken,
       },
     });
   } catch (err) {
     next(err);
-  }
+  };
 };
 
-export { register, login };
+const logout = async (req, res) => {
+  // Remove JWT Token
+  res.cookie("jwt", "", {
+    httpOnly: true,
+    expires: new Date(0),
+  });
+
+
+  return res.status(200).json({
+    status: "success",
+    message: "Logout Success"
+  });
+
+};
+
+const me = async (req, res, err) => {
+
+  try {
+
+    const [[dataUser]] = await pool.query
+
+  } catch (err) {
+    next(err)
+  }
+
+
+}
+
+export { register, login, logout };
