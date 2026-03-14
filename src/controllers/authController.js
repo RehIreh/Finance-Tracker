@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import generateToken from "../utils/jtwToken.js";
 
 const register = async (req, res, next) => {
+
   // Body register
   const { name, email, password, role } = req.body;
 
@@ -31,6 +32,11 @@ const register = async (req, res, next) => {
       [uuid, name, email, hashUserPassword, role],
     );
 
+    await pool.query(
+      `insert into userprofile(uuid) values (?)`,
+      [uuid]
+    )
+
     // Generate JWT Token
     const jwtToken = generateToken(uuid, res);
     console.log(uuid)
@@ -52,13 +58,14 @@ const register = async (req, res, next) => {
 };
 
 const login = async (req, res, next) => {
+
   // Body login
   const { email, password } = req.body;
 
   try {
     // Check user Exist
     const [[user]] = await pool.query(
-      `select email,password from users where email = ?`,
+      `select uuid,email,password from users where email = ?`,
       [email],
     );
 
@@ -105,17 +112,20 @@ const logout = async (req, res) => {
 
 };
 
-const me = async (req, res, err) => {
+const me = async (req, res) => {
 
-  try {
-
-    const [[dataUser]] = await pool.query
-
-  } catch (err) {
-    next(err)
-  }
+ 
+  const [[user]] = await pool.query(
+  `select name, email, uuid from users where uuid = ?`,
+  [req.user.uuid]
+  )
 
 
-}
+  return res.status(200).json({
+    status: "success",
+    data: user
+  }); 
 
-export { register, login, logout };
+};
+
+export { register, login, logout, me };
