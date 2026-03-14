@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import { pool } from '../config/db'
+import { pool } from '../config/db.js'
 
 //Check Token if is valid
 const checkToken = async (req, res, next) => {
@@ -20,14 +20,14 @@ const checkToken = async (req, res, next) => {
 
   //Verify token and get data from token
   try {
-
+    
     const decode = jwt.verify(token, process.env.CLIENT_SECRET);
 
-    const user = await pool.query(
+    const [[user]] = await pool.query(
       `select uuid from users where uuid = ?`,
         [decode.uuid]);
 
-     if (!user){
+     if (!user) {
       return res.status(401).json({error: "User not valid"});
     }
 
