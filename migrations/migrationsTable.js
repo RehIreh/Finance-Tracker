@@ -15,13 +15,13 @@ const up = async () => {
         `);
         await pool.query(
           `CREATE TABLE IF NOT EXISTS userprofile (
-          id INT AUTO_INCREMENT PRIMARY KEY,
-          uuid VARCHAR(100) NOT NULL UNIQUE,
-          address VARCHAR(250) NOT NULL,
-          birthDate DATE NOT NULL,
-          jobs VARCHAR(100) NOT NULL,
-          gender ENUM('L','P','N'),
-          FOREIGN KEY (uuid) REFERENCES users(uuid )
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            uuid VARCHAR(100) NOT NULL UNIQUE,
+            address VARCHAR(250) DEFAULT NULL,
+            birthDate DATE DEFAULT NULL,
+            jobs VARCHAR(100) DEFAULT NULL,
+            gender ENUM('L','P','N') DEFAULT 'N',
+            FOREIGN KEY (uuid) REFERENCES users(uuid) ON DELETE CASCADE
           )`
         );
     } catch (err) {
