@@ -8,7 +8,12 @@ const register = async (req, res, next) => {
   // Body register
   const { name, email, password, role } = req.body;
 
+  const connection = await pool.getConnection();
+
   try {
+
+    await connection.beginTransaction();
+
     // Check if user exist
     const [[isUserExist]] = await pool.query(
       `select email from users where email = ?`,
@@ -37,9 +42,9 @@ const register = async (req, res, next) => {
       [uuid]
     )
 
+    await connection.commit();
     // Generate JWT Token
     const jwtToken = generateToken(uuid, res);
-    console.log(uuid)
 
     return res.status(202).json({
       status: "success",
@@ -53,7 +58,15 @@ const register = async (req, res, next) => {
       },
     });
   } catch (err) {
+
+    await connection.rollback();
+
     next(err);
+    
+  } finally {
+
+    connection.release();
+
   }
 };
 
