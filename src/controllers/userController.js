@@ -56,5 +56,34 @@ const updateProfile = async(req, res) => {
 
 };
 
+const deleteProfile = async (req, res, next) => {
 
-export { profile, updateProfile };
+  try {
+
+    const [user] = await pool.query(
+      `DELETE FROM users WHERE uuid = ?`,
+      [req.user.uuid]
+    );
+
+    if (user.affectedRows === 0) {
+      return res.status(404).json({
+        status: "failed",
+        message: "Data tidak ditemukan"
+      });
+    }
+
+    res.status(200).json({
+      status: "success",
+      message: "data berhasil dihapus"
+    });
+
+  } catch (err) {
+    next(err);
+  }
+
+};
+
+
+
+
+export { profile, updateProfile, deleteProfile };
