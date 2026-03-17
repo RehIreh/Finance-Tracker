@@ -4,7 +4,7 @@ import { pool } from "../src/config/db.js";
 const up = async () => {
     try {
       await pool.query(`
-        CREATE TABLE IF NOT EXISTS users (
+          CREATE TABLE IF NOT EXISTS users (
           id INT AUTO_INCREMENT PRIMARY KEY,
           uuid VARCHAR(100) NOT NULL UNIQUE,
           name VARCHAR(100) NOT NULL,
@@ -13,8 +13,8 @@ const up = async () => {
           role VARCHAR(50) NOT NULL
         )        
         `);
-        await pool.query(
-          `CREATE TABLE IF NOT EXISTS userprofile (
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS userprofile (
             id INT AUTO_INCREMENT PRIMARY KEY,
             uuid VARCHAR(100) NOT NULL UNIQUE,
             address VARCHAR(250) DEFAULT NULL,
@@ -22,6 +22,30 @@ const up = async () => {
             jobs VARCHAR(100) DEFAULT NULL,
             gender ENUM('L','P','N') DEFAULT 'N',
             FOREIGN KEY (uuid) REFERENCES users(uuid) ON DELETE CASCADE
+          )`
+        );
+        await pool.query(`
+          CREATE TABLE IF NOT EXISTS categories (
+           id INT AUTO_INCREMENT PRIMARY KEY,
+           uuid VARCHAR(100) NOT NULL UNIQUE,
+           name VARCHAR(100) NOT NULL,
+           type ENUM('income','expense') NOT NULL,
+           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+           FOREIGN KEY (uuid) REFERENCES users(uuid) ON DELETE CASCADE
+          )`
+        );
+        await pool.query(`
+          CREATE TABLE IF NOT EXISTS transactions (
+          id INT AUTO_INCREMENT PRIMARY KEY,
+          uuid VARCHAR(100) NOT NULL,
+          category_id INT NOT NULL,
+          amount DECIMAL(16,2) NOT NULL,
+          note TEXT,
+          type ENUM('income','expense') NOT NULL,
+          transaction_date DATE NOT NULL,
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (uuid) REFERENCES users(uuid) ON DELETE CASCADE,
+          FOREIGN KEY (category_id) REFERENCES categories(id)
           )`
         );
     } catch (err) {
