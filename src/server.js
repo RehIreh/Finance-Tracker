@@ -4,6 +4,7 @@ import {pool, connectDB} from "./config/db.js";
 
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import categoriesRoutes from "./routes/categoriesRoutes.js";
 
 
 
@@ -24,6 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 //API
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
+app.use("/categories", categoriesRoutes);
 
 
 const PORT = 5001;
