@@ -27,10 +27,11 @@ const up = async () => {
         await pool.query(`
           CREATE TABLE IF NOT EXISTS categories (
            id INT AUTO_INCREMENT PRIMARY KEY,
-           uuid VARCHAR(100) NOT NULL UNIQUE,
+           uuid VARCHAR(100) NOT NULL,
            name VARCHAR(100) NOT NULL,
            type ENUM('income','expense') NOT NULL,
            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+           UNIQUE (uuid, name),
            FOREIGN KEY (uuid) REFERENCES users(uuid) ON DELETE CASCADE
           )`
         );
