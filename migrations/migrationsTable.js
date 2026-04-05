@@ -55,6 +55,6 @@ const up = async () => {
       await pool.end();
     }
 };
-
+ 
 
 up();
