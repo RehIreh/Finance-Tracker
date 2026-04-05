@@ -5,6 +5,7 @@ import {pool, connectDB} from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import categoriesRoutes from "./routes/categoriesRoutes.js";
+import transactionRoutes from "./routes/transactionRoutes.js";
 
 
 
@@ -26,6 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/categories", categoriesRoutes);
+app.use("/transaction", transactionRoutes);
 
 
 const PORT = 5001;
@@ -36,4 +38,4 @@ app.listen(PORT, () => {
 
 
 // Error handler
-app.use(errorHandler);
+app.use(errorHandler); 
